@@ -3,8 +3,9 @@
 **Transcript to ebook** is a **tool**. It will help you get transcript from your favorite Youtube video in various formats.
 
 As of right now supported formats include EPUB and TXT.
-
-![A screenshot](screenshot.png)
+![German screenshot](resources/screenshot_german.png)
+![Italian screenshot](resources/screenshot_italian.png)
+![A screenshot](resources/screenshot.png)
 
 # Instalation
 
