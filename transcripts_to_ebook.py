@@ -284,7 +284,7 @@ def do_the_youtube_thingy(sender):
     video_id = get_video_id(dpg.get_value("youtubethingy"))
     if validate_youtube_video_id_url(video_id):
         # 0. Clear widgets if they exist
-        if sender == "youtubethingy":
+        if sender == "youtubethingy" or "youtubethingy_buttons":
             clear_widgets()
         else:
             pass
