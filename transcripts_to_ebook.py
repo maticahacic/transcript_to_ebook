@@ -175,7 +175,7 @@ def import_img_to_texture_registry(video_id):
     # FIXME: This probably goes into separate class to regex etc. only once per video objectorino
     # imports images to texture registry
     if video_id not in dpg.get_aliases():
-        width, height, channels, data = dpg.load_image(f"tmp/{video_id}.jpg")
+        width, height, channels, data = dpg.load_image(f"tmp/{video_id}mq.jpg")
         with dpg.texture_registry():
             dpg.add_static_texture(width, height, data, tag=video_id)
         thumbnail_ratio = width / height
