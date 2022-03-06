@@ -3,7 +3,7 @@ import os
 import requests
 import dearpygui.dearpygui as dpg
 
-from urllib.request import urlretrieve
+from urllib.request import urlretrieve, urlopen
 from urllib.parse import urlparse, parse_qs
 from contextlib import suppress
 
@@ -11,7 +11,6 @@ from ebooklib import epub
 
 from youtube_transcript_api import YouTubeTranscriptApi
 
-import urllib.request
 from bs4 import BeautifulSoup as bs
 import regex
 
@@ -19,7 +18,7 @@ dpg.create_context()
 
 
 def get_video_details(type_of_detail):
-    page = urllib.request.urlopen(dpg.get_value("youtubethingy"))
+    page = urlopen(dpg.get_value("youtubethingy"))
     soup = bs(page, features="html.parser")
     if type_of_detail == "title":
         title = soup.find("title").contents[0][:-9]
@@ -92,7 +91,6 @@ def create_epub_file(video_id):
 
     # Description
     description = description.replace(r"\n", "<p>")
-    print(description)
     description_chapter = epub.EpubHtml(title="Description", file_name="description.xhtml", lang=language)
     description_chapter.content = f"<html><head></head><body><h1>Video description</h1>" \
                                   f"<p>{description}</p></body></html> "
@@ -155,7 +153,6 @@ def get_thumbnail_youtube(video_id, quality):
     # FIXME: This probably goes into separate class to regex etc. only once per video objectorino
     path = f"tmp/{video_id}{quality}.jpg"
     url = f"https://img.youtube.com/vi/{video_id}/{quality}default.jpg"
-    print(url)
     if os.path.exists(path):
         pass
     else:
@@ -310,9 +307,7 @@ def draw_transcript(sender, data):
     # FIXME: !Clean up por favor!
     video_id = get_video_id(dpg.get_value("youtubethingy"))
     transcript = get_transcript(dpg.get_value("listoflanguages"), video_id)
-    print(sender)
     paragraph = ""
-    print(data)
     if dpg.get_value("timestamps_chkbx"):
         for lines in transcript:
             time = int(lines["start"])
@@ -348,6 +343,8 @@ def change_button_txt_file_btn_data():
 
 
 def load_gui():
+    dpg.create_context()
+
     with dpg.window(pos=[0, 0], autosize=True, no_collapse=True, no_resize=True, no_close=True, no_move=True,
                     no_title_bar=True, tag="Primary Window"):
         dpg.bind_font(font1)
