@@ -1,6 +1,5 @@
 import os
 
-
 import requests
 import dearpygui.dearpygui as dpg
 
@@ -23,7 +22,6 @@ dpg.create_context()
 
 def get_video_details(type_of_detail):
     # FIXME: This probably goes into separate class to regex etc. only once per video objectorino
-
     # Call the videos.list method
     # to retrieve video info
     video_id = get_video_id(dpg.get_value("youtubethingy"))
