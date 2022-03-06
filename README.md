@@ -8,20 +8,16 @@ As of right now supported formats include EPUB and TXT.
 
 # Instalation
 
-    Make sure you have Python 3 installed and working.
+Make sure you have Python 3 installed and working.
 
-    Get the repository:
-
+Get the repository:
 ```
 git clone https://github.com/maticahacic/transcript_to_ebook.git
 ```
-
-    Install prerequisites using pip, preferably in a new environment:
-
+Install prerequisites using pip, preferably in a new environment:
 ```
 pip install -r requirements.txt
 ```
-    Run the transcripts_to_ebook.py file to start the application.
 
 # Usage
 ![A demonstration of usage](resources/demo_usage.gif)
