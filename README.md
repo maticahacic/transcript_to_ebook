@@ -24,5 +24,5 @@ pip install -r requirements.txt
 
 1. Run <i>transcript_to_ebook.py</i>
 2. Paste YouTube URL into corresponding input field
-3. After you are done with customizing press the big "Create <Filetype> ebook" button at the bottom
+3. After you are done with customizing press the big "Create **Filetype** ebook" button at the bottom
 4. You can find file created in the root directory of the directory.
