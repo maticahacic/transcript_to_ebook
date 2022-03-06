@@ -1,0 +1,4 @@
+dearpygui~=1.4.0
+requests~=2.27.1
+EbookLib~=0.17.1
+google-api-python-client~=2.39.0
