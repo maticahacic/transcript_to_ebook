@@ -21,9 +21,12 @@ def get_video_details(type_of_detail):
     page = urlopen(dpg.get_value("youtubethingy"))
     soup = bs(page, features="html.parser")
     if type_of_detail == "title":
-        title = soup.find("title").contents[0][:-9]
-        return title
+        # Even though there is a <title> tag in youtube page next siblings content gets
+        # cleaner result
+        return soup.title.next_sibling["content"]
     elif type_of_detail == "description":
+        # There are <meta> tags with description inside but all of them a shortened
+        # <script> tag has long description available
         description_soup = soup.findAll('script')
         regex_pattern = regex.compile(r'(?<="shortDescription":")(?s)(.*)","isCrawlable"')
         description = regex_pattern.findall(str(description_soup))[0]
