@@ -72,7 +72,7 @@ def create_cover(url, video_thumbnail_path, author, title, colorcombo, sender):
     image_cover.paste(image_bottom, (0, 720+465))
     layer1 = image_cover.convert("RGBA")
     layer_rectangle = Image.new("RGBA", layer1.size, color=(0, 0, 0, 0))
-    outline_rectangle = (color_top_font[0], color_top_font[1], color_top_font[2], 100)
+    outline_rectangle = (color_top_font[0], color_top_font[1], color_top_font[2], 190)
     ImageDraw.Draw(layer_rectangle).rectangle((50, 50, 1230, 1600), outline=outline_rectangle, width=13)
 
     final2 = Image.alpha_composite(layer1, layer_rectangle)
@@ -91,7 +91,7 @@ def main():
     video_thumbnail_path = "tmp/thumbnailmaxres.jpg"
     author = "Learn Italian with Lucrezia"
     title = "Learn 18 useful Italian adjectives to describe personality in Italian (Sub)"
-    create_cover(url, video_thumbnail_path, author, title, "combo2.png", "epub")
+    create_cover(url, video_thumbnail_path, author, title, "combo1.png", "epub")
 
 
 if __name__ == "__main__":

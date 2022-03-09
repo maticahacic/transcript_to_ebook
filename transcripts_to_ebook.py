@@ -15,8 +15,6 @@ from bs4 import BeautifulSoup as bs
 import regex
 import cover
 
-dpg.create_context()
-
 
 def get_video_details(type_of_detail):
     page = urlopen(dpg.get_value("youtubethingy"))
@@ -398,6 +396,13 @@ def load_gui():
             # FIXME: Add support for "all" the languages
             dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
             dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
+            dpg.add_font_range_hint(dpg.mvFontRangeHint_Japanese)
+            dpg.add_font_range_hint(dpg.mvFontRangeHint_Korean)
+            dpg.add_font_range_hint(dpg.mvFontRangeHint_Chinese_Full)
+            dpg.add_font_range_hint(dpg.mvFontRangeHint_Chinese_Simplified_Common)
+            dpg.add_font_range_hint(dpg.mvFontRangeHint_Thai)
+            dpg.add_font_range_hint(dpg.mvFontRangeHint_Vietnamese)
+
     load_color_button_textures()
 
     with dpg.window(pos=[0, 0], autosize=True, no_collapse=True, no_resize=True, no_close=True, no_move=True,
