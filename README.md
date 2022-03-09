@@ -7,6 +7,9 @@ As of right now supported formats include EPUB and TXT.
 ![Italian screenshot](resources/screenshot_italian.png)
 ![A screenshot](resources/screenshot.png)
 
+Cover generated will look like this:
+![Cover demo](resources/demo_cover.jpg)
+
 # Instalation
 
 Make sure you have Python 3 installed and working.
