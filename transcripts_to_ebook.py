@@ -41,11 +41,7 @@ def get_video_details(type_of_detail):
         return img_thumbnail_channel_url
 
 
-with dpg.font_registry():
-    with dpg.font("resources/Ubuntu-R.ttf", 15) as font1:
-        # FIXME: Add support for "all" the languages
-        dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
-        dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
+
 
 
 def create_a_file():
@@ -316,36 +312,40 @@ def get_transcript(data, video_id):
 def draw_transcript(sender, data):
     # FIXME: !Clean up por favor!
     video_id = get_video_id(dpg.get_value("youtubethingy"))
-    transcript = get_transcript(dpg.get_value("listoflanguages"), video_id)
-    paragraph = ""
-    if dpg.get_value("timestamps_chkbx"):
-        for lines in transcript:
-            time = int(lines["start"])
-            minutes = '{:0>2}'.format(int(time / 60))
-            seconds = '{:0>2}'.format(time % 60)
+    # transcript = get_transcript(dpg.get_value("listoflanguages"), video_id)
+    if dpg.get_value("listoflanguages") == '':
+        dpg.add_text("Unfortunately this video does not have transcripts available", tag="transcript_txt", parent="Transcript")
+    else:
+        transcript = get_transcript(dpg.get_value("listoflanguages"), video_id)
+        paragraph = ""
+        if dpg.get_value("timestamps_chkbx"):
+            for lines in transcript:
+                time = int(lines["start"])
+                minutes = '{:0>2}'.format(int(time / 60))
+                seconds = '{:0>2}'.format(time % 60)
+                if data == "html":
+                    paragraph = f"{paragraph}<p>{minutes}:{seconds} {lines['text']}</p>\n"
+                else:
+                    paragraph = f"{paragraph}{minutes}:{seconds} {lines['text']}\n"
+        else:
+            # Hackish solution to get working HTML "string" to put into epub
+            # FIXME: Add proper "htmlify" function to get better html
             if data == "html":
-                paragraph = f"{paragraph}<p>{minutes}:{seconds} {lines['text']}</p>\n"
+                for lines in transcript:
+                    paragraph = f"{paragraph}<p>{lines['text']}<br>\n"
             else:
-                paragraph = f"{paragraph}{minutes}:{seconds} {lines['text']}\n"
-    else:
-        # Hackish solution to get working HTML "string" to put into epub
-        # FIXME: Add proper "htmlify" function to get better html
-        if data == "html":
-            for lines in transcript:
-                paragraph = f"{paragraph}<p>{lines['text']}<br>\n"
-        else:
-            for lines in transcript:
-                paragraph = f"{paragraph}{lines['text']}\n"
+                for lines in transcript:
+                    paragraph = f"{paragraph}{lines['text']}\n"
 
-    if sender == "create_file":
-        return paragraph
-    else:
-        # I think there is a better way :^)
-        if "transcript_txt" in dpg.get_aliases():
-            dpg.delete_item("transcript_txt")
-            dpg.add_text(paragraph, tag="transcript_txt", parent="Transcript")
+        if sender == "create_file":
+            return paragraph
         else:
-            dpg.add_text(paragraph, tag="transcript_txt", parent="Transcript")
+            # I think there is a better way :^)
+            if "transcript_txt" in dpg.get_aliases():
+                dpg.delete_item("transcript_txt")
+                dpg.add_text(paragraph, tag="transcript_txt", parent="Transcript")
+            else:
+                dpg.add_text(paragraph, tag="transcript_txt", parent="Transcript")
 
 
 def change_button_txt_file_btn_data():
@@ -354,7 +354,11 @@ def change_button_txt_file_btn_data():
 
 def load_gui():
     dpg.create_context()
-
+    with dpg.font_registry():
+        with dpg.font("resources/Ubuntu-R.ttf", 15) as font1:
+            # FIXME: Add support for "all" the languages
+            dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
+            dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
     with dpg.window(pos=[0, 0], autosize=True, no_collapse=True, no_resize=True, no_close=True, no_move=True,
                     no_title_bar=True, tag="Primary Window"):
         dpg.bind_font(font1)
