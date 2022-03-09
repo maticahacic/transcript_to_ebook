@@ -8,6 +8,7 @@ As of right now supported formats include EPUB and TXT.
 ![A screenshot](resources/screenshot.png)
 
 Cover generated will look like this:
+
 ![Cover demo](resources/demo_cover.jpg)
 
 # Instalation
