@@ -277,12 +277,10 @@ def do_the_youtube_thingy(sender):
     if validate_youtube_video_id_url(video_id):
         # 0. Clear widgets if they exist
         if sender == "youtubethingy":
-            print(f"sender = {sender}")
             clear_widgets()
             get_thumbnail_youtube(video_id, "mq")
             import_img_to_texture_registry(video_id)
         elif sender == "youtubethingy_buttons":
-            print(f"sender = {sender}")
             clear_widgets()
             get_thumbnail_youtube(video_id, "mq")
             import_img_to_texture_registry(video_id)
@@ -355,8 +353,6 @@ def change_button_txt_file_btn_data():
 def load_color_button_textures():
     path = "resources/color_combinations"
     for colorcombo in os.listdir(path):
-        print(os.listdir(path))
-        print(colorcombo)
         width, height, channels, data = dpg.load_image("resources/color_combinations/" + colorcombo)
         with dpg.texture_registry():
             dpg.add_static_texture(width, height, data, tag=colorcombo)
