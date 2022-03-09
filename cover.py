@@ -91,7 +91,7 @@ def main():
     video_thumbnail_path = "tmp/thumbnailmaxres.jpg"
     author = "Learn Italian with Lucrezia"
     title = "Learn 18 useful Italian adjectives to describe personality in Italian (Sub)"
-    create_cover(url, video_thumbnail_path, author, title, "combo5.png")
+    create_cover(url, video_thumbnail_path, author, title, "combo2.png", "epub")
 
 
 if __name__ == "__main__":
