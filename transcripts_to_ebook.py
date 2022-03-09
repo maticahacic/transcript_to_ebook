@@ -41,9 +41,6 @@ def get_video_details(type_of_detail):
         return img_thumbnail_channel_url
 
 
-
-
-
 def create_a_file():
     # Placeholder (or so it seems) for creating files:
     # At least calls API less time till Class will be implemented
@@ -93,7 +90,9 @@ def create_epub_file(video_id):
     book.add_author(author)
     get_thumbnail_youtube(video_id, cover_quality)
     video_thumbnail_path = f"tmp/thumbnailmaxres.jpg"
-    cover_path = cover.create_cover(get_video_details("author_thumbnail"), video_thumbnail_path, author, title)
+    colorcombo = dpg.get_item_user_data("color_combo_name")
+    cover_path = cover.create_cover(get_video_details("author_thumbnail"), video_thumbnail_path, author, title,
+                                    colorcombo, "epub")
 
     book.set_cover(video_id + ".jpg", open(cover_path, "rb").read())
 
@@ -314,7 +313,8 @@ def draw_transcript(sender, data):
     video_id = get_video_id(dpg.get_value("youtubethingy"))
     # transcript = get_transcript(dpg.get_value("listoflanguages"), video_id)
     if dpg.get_value("listoflanguages") == '':
-        dpg.add_text("Unfortunately this video does not have transcripts available", tag="transcript_txt", parent="Transcript")
+        dpg.add_text("Unfortunately this video does not have transcripts available", tag="transcript_txt",
+                     parent="Transcript")
     else:
         transcript = get_transcript(dpg.get_value("listoflanguages"), video_id)
         paragraph = ""
@@ -352,6 +352,49 @@ def change_button_txt_file_btn_data():
     dpg.configure_item("txt_file_btn", label=f"Create {dpg.get_value('file_format_menu')} file from transcript")
 
 
+def load_color_button_textures():
+    path = "resources/color_combinations"
+    for colorcombo in os.listdir(path):
+        print(os.listdir(path))
+        print(colorcombo)
+        width, height, channels, data = dpg.load_image("resources/color_combinations/" + colorcombo)
+        with dpg.texture_registry():
+            dpg.add_static_texture(width, height, data, tag=colorcombo)
+
+
+def draw_color_buttons(name):
+    height, width = 15, 150
+    if name == "dir":
+        path = "resources/color_combinations"
+        for colorcombo in os.listdir(path):
+            dpg.add_image_button(colorcombo, user_data=["color_combo_name", colorcombo], height=height, width=width,
+                                 parent="color_picker_popup", callback=set_color_combo)
+    elif name == "color_combo_name":
+        dpg.add_image_button(texture_tag="combo1.png", tag=name, parent="color_picker_settings", height=height,
+                             width=width)
+
+
+def set_color_combo(sender, data, data1):
+    dpg.configure_item(data1[0], texture_tag=data1[1], user_data=data1[1])
+
+
+def show_cover(sender):
+    video_id = get_video_id(dpg.get_value("youtubethingy"))
+    if validate_youtube_video_id_url(video_id):
+        get_thumbnail_youtube(video_id, "maxres")
+        colorcombo = dpg.get_item_user_data("color_combo_name")
+        if colorcombo == None:
+            colorcombo = "combo1.png"
+        video_thumbnail_path = f"tmp/thumbnailmaxres.jpg"
+        author = get_video_details('author')
+        title = get_video_details('title')
+
+        cover.create_cover(get_video_details("author_thumbnail"), video_thumbnail_path, author, title,
+                           colorcombo, sender)
+    else:
+        pass
+
+
 def load_gui():
     dpg.create_context()
     with dpg.font_registry():
@@ -359,6 +402,8 @@ def load_gui():
             # FIXME: Add support for "all" the languages
             dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
             dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
+    load_color_button_textures()
+
     with dpg.window(pos=[0, 0], autosize=True, no_collapse=True, no_resize=True, no_close=True, no_move=True,
                     no_title_bar=True, tag="Primary Window"):
         dpg.bind_font(font1)
@@ -389,6 +434,16 @@ def load_gui():
                                 dpg.add_combo(("EPUB", "TXT"), default_value="TXT",
                                               callback=change_button_txt_file_btn_data, tag="file_format_menu",
                                               width=100)
+                            with dpg.group(tag="color_picker_settings"):
+                                dpg.add_text("Cover color combination:")
+                                draw_color_buttons("color_combo_name")
+                                with dpg.popup("color_combo_name", mousebutton=dpg.mvMouseButton_Left,
+                                               tag="color_picker_popup"):
+                                    dpg.add_text("Choose color combination")
+                                    dpg.add_separator()
+                                    draw_color_buttons("dir")
+                                dpg.add_button(tag="create_cover", label="Show cover", callback=show_cover)
+
                 with dpg.group(horizontal=True, width=0):
                     dpg.add_button(tag="txt_file_btn",
                                    label=f"Create {dpg.get_value('file_format_menu')} file from the transcript",
