@@ -39,12 +39,12 @@ def create_cover(url, video_thumbnail_path, author, title):
     myfont = ImageFont.truetype("resources/Ubuntu-R.ttf", 80)
 
     image_cover = Image.new("RGB", (1280, 1650), "white")
-    image_top = Image.new("RGB", (1280, 465), "white")
+    image_top = Image.new("RGB", (1280, 465), color ="#e7e4c4")
     image_icon = Image.open(path)
     image_top_draw = ImageDraw.Draw(image_top)
     image_top_draw.text((100, 320), text_wrapper(author, myfont, 1000), font=myfont, fill=(0, 0, 0))
     image_thumbnail = Image.open(video_thumbnail_path)
-    image_bottom = Image.new("RGB", (1280, 465), "white")
+    image_bottom = Image.new("RGB", (1280, 465), color ="#e7e4c4")
     image_bottom_draw = ImageDraw.Draw(image_bottom)
 
     # FIXME: Implement text resizing based on height of the text.
