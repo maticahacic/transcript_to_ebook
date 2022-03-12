@@ -90,7 +90,7 @@ def create_epub_file(video_id):
     video_thumbnail_path = f"tmp/thumbnailmaxres.jpg"
     colorcombo = dpg.get_item_user_data("color_combo_name")
     cover_path = cover.create_cover(get_video_details("author_thumbnail"), video_thumbnail_path, author, title,
-                                    colorcombo, "epub")
+                                    colorcombo, "epub", 7)
 
     book.set_cover(video_id + ".jpg", open(cover_path, "rb").read())
 
@@ -361,8 +361,11 @@ def draw_color_buttons(name):
     if name == "dir":
         path = "resources/color_combinations"
         for colorcombo in os.listdir(path):
-            dpg.add_image_button(colorcombo, user_data=["color_combo_name", colorcombo], height=height, width=width,
-                                 parent="color_picker_popup", callback=set_color_combo)
+            if "outline" in colorcombo:
+                pass
+            else:
+                dpg.add_image_button(colorcombo, user_data=["color_combo_name", colorcombo], height=height, width=width,
+                                     parent="color_picker_popup", callback=set_color_combo)
     elif name == "color_combo_name":
         dpg.add_image_button(texture_tag="combo1.png", tag=name, parent="color_picker_settings", height=height,
                              width=width)
@@ -377,14 +380,13 @@ def show_cover(sender):
     if validate_youtube_video_id_url(video_id):
         get_thumbnail_youtube(video_id, "maxres")
         colorcombo = dpg.get_item_user_data("color_combo_name")
-        if colorcombo == None:
+        if colorcombo is None:
             colorcombo = "combo1.png"
         video_thumbnail_path = f"tmp/thumbnailmaxres.jpg"
         author = get_video_details('author')
         title = get_video_details('title')
-
         cover.create_cover(get_video_details("author_thumbnail"), video_thumbnail_path, author, title,
-                           colorcombo, sender)
+                           colorcombo, "showcover", 5)
     else:
         pass
 
@@ -417,7 +419,6 @@ def load_gui():
                     dpg.add_button(tag="youtubethingy_buttons", label="Get transcript", callback=do_the_youtube_thingy)
                 dpg.add_text("List of languages:")
                 dpg.add_listbox(tag="listoflanguages", callback=draw_transcript, width=623)
-                # dpg.add_button(label="Do the youtube thing", callback=do_the_youtube_thing)
                 with dpg.group(horizontal=True):
                     with dpg.group(width=335):
                         dpg.add_text("Cover:")
