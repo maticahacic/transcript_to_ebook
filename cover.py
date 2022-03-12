@@ -107,6 +107,10 @@ def create_cover(url, video_thumbnail_path, author, title, colorcombo, sender, c
         elif color_number == 10:
             path = f"tmp/cover{colorcombo[:6]}{color_number}.png"
             final2.save(path, "PNG")
+        elif color_number == 42:
+            final2.thumbnail((256,330))
+            path = f"tmp/{colorcombo[:6]}_thumbnail.png"
+            final2.save(path, "PNG")
         elif color_number == 5:
             # This is for testing purposes only
             print("imhere")
@@ -120,15 +124,31 @@ def create_cover(url, video_thumbnail_path, author, title, colorcombo, sender, c
         final2.show()
 
 
-def generate_all_cover_options(url, video_thumbnail_path, author, title, which_outline):
+def generate_all(type_of_ouput):
     # Testing different color combinations and outlines of said combinations
+    url = "https://yt3.ggpht.com/ytc/AKedOLR8EP18dz9h1mInmZPQSYdjv-RN-te55pbRKfubEA=s176-c-k-c0x00ffffff-no-rj"
+    video_thumbnail_path = "tmp/thumbnailmaxres.jpg"
+    author = "Learn Italian with Lucrezia"
+    title = "Learn 18 useful Italian adjectives to describe personality in Italian (Sub)"
     path = "resources/color_combinations"
     color_combinations = [0, 1, 2, 3]
-    if which_outline == "all":
+
+    if type_of_ouput == "thumbnail":
         for colorcombo in os.listdir(path):
-            for color in color_combinations:
-                create_cover(url, video_thumbnail_path, author, title, colorcombo, "epub", color)
-    elif which_outline == "outline":
+            if "outline" in colorcombo:
+                pass
+            else:
+                create_cover(url, video_thumbnail_path, author, title, colorcombo, "epub", 42)
+                
+    elif type_of_ouput == "all":
+        for colorcombo in os.listdir(path):
+            if "outline" in colorcombo:
+                pass
+            else:
+                for color in color_combinations:
+                    create_cover(url, video_thumbnail_path, author, title, colorcombo, "epub", color)
+
+    elif type_of_ouput== "outline":
         for colorcombo in os.listdir(path):
             if "outline" in colorcombo:
                 pass
@@ -137,12 +157,14 @@ def generate_all_cover_options(url, video_thumbnail_path, author, title, which_o
 
 
 def main():
-    url = "https://yt3.ggpht.com/ytc/AKedOLR8EP18dz9h1mInmZPQSYdjv-RN-te55pbRKfubEA=s176-c-k-c0x00ffffff-no-rj"
-    video_thumbnail_path = "tmp/thumbnailmaxres.jpg"
-    author = "Learn Italian with Lucrezia"
-    title = "Learn 18 useful Italian adjectives to describe personality in Italian (Sub)"
-    #create_cover(url, video_thumbnail_path, author, title, "combo4.png", "epub", 10)
-    generate_all_cover_options(url, video_thumbnail_path, author, title, "outline")
+
+    # create_cover(url, video_thumbnail_path, author, title, "combo4.png", "epub", 10)
+    # generate_all_cover_options(url, video_thumbnail_path, author, title, "outline")
+    # type of options 
+    # "thumbnail" - generates thumbnail versions of covers
+    # "outline" - generates covers from all theme files using coresponding *_outline.png file
+    # "all" - generates covers using all base colors of a cover theme to get covers. Outuput is number_of_colors*number_of_combination.png_files of cover files
+    generate_all("thumbnail")
 
 
 if __name__ == "__main__":

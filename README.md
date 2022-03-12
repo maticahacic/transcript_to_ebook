@@ -7,9 +7,17 @@ As of right now supported formats include EPUB and TXT.
 ![Italian screenshot](resources/screenshot_italian.png)
 ![A screenshot](resources/screenshot.png)
 
-Cover generated will look like this:
+Covers generated with current available themes will look like this:
 
-![Cover demo](resources/demo_cover.jpg)
+![Cover demo](resources/cover_thumbnails/combo1_thumbnail.png)
+![Cover demo](resources/cover_thumbnails/combo2_thumbnail.png)
+![Cover demo](resources/cover_thumbnails/combo3_thumbnail.png)
+![Cover demo](resources/cover_thumbnails/combo4_thumbnail.png)
+![Cover demo](resources/cover_thumbnails/combo5_thumbnail.png)
+![Cover demo](resources/cover_thumbnails/combo6_thumbnail.png)
+![Cover demo](resources/cover_thumbnails/combo7_thumbnail.png)
+![Cover demo](resources/cover_thumbnails/combo8_thumbnail.png)
+![Cover demo](resources/cover_thumbnails/combo9_thumbnail.png)
 
 # Instalation
 
