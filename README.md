@@ -28,7 +28,7 @@ Get the repository:
 git clone https://github.com/maticahacic/transcript_to_ebook.git
 ```
 Install prerequisites using pip, preferably in a new environment:
-```
+```git push origin master
 pip install -r requirements.txt
 ```
 
