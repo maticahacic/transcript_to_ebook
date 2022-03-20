@@ -1,7 +1,6 @@
 # Importing the Pillow library
 from PIL import Image, ImageDraw, ImageFont
 import os
-from urllib.request import urlretrieve
 
 
 def text_wrapper(text, font, max_width):
@@ -45,13 +44,10 @@ def get_colors_from_colorcombo_image(colorcombo_path, colorcombo_outline_path):
     return color_top, color_top_font, color_bottom, color_bottom_font, color_outline
 
 
-def create_cover(thumbnail_author_path, video_thumbnail_path, author, title, colorcombo, sender, color_number):
+def create_cover(thumbnail_author_path, video_thumbnail_path, author, title, colorcombo, sender, color_number, outline):
     # Cover size = 1280 x 1650
     colorcombo_path = f"resources/color_combinations/{colorcombo}"
-    print(colorcombo_path)
     colorcombo_outline_path = f"resources/color_combinations/{colorcombo[:6]}_outline.png"
-    print(colorcombo_outline_path )
-    color_top, color_top_font, color_bottom, color_bottom_font = ["white", "black", "white", "black"]
 
     colors_list = get_colors_from_colorcombo_image(colorcombo_path, colorcombo_outline_path)
 
@@ -74,10 +70,10 @@ def create_cover(thumbnail_author_path, video_thumbnail_path, author, title, col
     image_cover.paste(image_thumbnail, (0, 465))
     image_cover.paste(image_bottom, (0, 720 + 465))
     
-    layer_rectangle = Image.new("RGBA", image_cover.size, color=(0, 0, 0, 0))
+
 
     # FIXME, add this outside. When implementing cover editor
-    proper_senders = ["epub", "showcover"]
+    proper_senders = ["epub", "showcover", "thumbnail"]
     if sender in proper_senders:
         outline_rectangle = (colors_list[4][0], colors_list[4][1], colors_list[4][2], 190)
     else:
@@ -86,20 +82,23 @@ def create_cover(thumbnail_author_path, video_thumbnail_path, author, title, col
         else:
             outline_rectangle = (colors_list[4][0], colors_list[4][1], colors_list[4][2], 190)
     
-    layer_rectangle = Image.new("RGBA", image_cover.size, color=(0, 0, 0, 0))
-    ImageDraw.Draw(layer_rectangle).rectangle((50, 50, 1230, 1600), outline=outline_rectangle, width=13)
-
-    final_cover = Image.alpha_composite(image_cover, layer_rectangle)
-    # final_cover.show()
+    if outline:
+        layer_rectangle = Image.new("RGBA", image_cover.size, color=(0, 0, 0, 0))
+        ImageDraw.Draw(layer_rectangle).rectangle((50, 50, 1230, 1600), outline=outline_rectangle, width=13)
+        final_cover = Image.alpha_composite(image_cover, layer_rectangle)
+    else:
+        final_cover = image_cover
 
     # FIXME: Change from arbitray number "ifs" to more readeable form
 
     if sender == "epub":
         path = f"tmp/cover.png"
         final_cover.save(path, "PNG")
-    elif sender == "showcover":
-        # TODO: Add creation of thumbnail and "drawing" it into gui
-        final_cover.show()
+    elif sender == "thumbnail":
+        final_cover.thumbnail((330,425))
+        path = f"tmp/cover_thumbnail.png"
+        final_cover.save(path, "PNG")
+        return path
     else:
         # this should be used by cover.py for testing purposes only
         if color_number < 4:
@@ -115,21 +114,18 @@ def create_cover(thumbnail_author_path, video_thumbnail_path, author, title, col
         elif color_number == 5:
             # This is for testing purposes only
             print("imhere")
-            final_cover.show()
-        elif color_number == 7:
-            path = f"tmp/cover.png"
+            path = f"tmp/cover_thumbnail.png"
             final_cover.save(path, "PNG")
         return path
 
 
-
 def generate_all(type_of_ouput):
-    # Testing different color combinations and outlines of said combinations
-    url = "https://yt3.ggpht.com/ytc/AKedOLR8EP18dz9h1mInmZPQSYdjv-RN-te55pbRKfubEA=s176-c-k-c0x00ffffff-no-rj"
-
-    video_thumbnail_path = "tmp/thumbnailmaxres.jpg"
-    author = "Learn Italian with Lucrezia"
-    title = "Learn 18 useful Italian adjectives to describe personality in Italian (Sub)"
+    # Testing different color combinations and outlines of said combinations 
+    author_thumbnail_path = "resources/test_graphics/author_thumbnail_test.png"
+    video_thumbnail_path = "resources/test_graphics/thumbnail_test.png"
+    author = "This is a test of Author Name"
+    title = "This is just a Title Test Case with some words when you fill out the Youtube URL field you will see " \
+                "different result"
     path = "resources/color_combinations"
     color_combinations = [0, 1, 2, 3]
     for colorcombo in os.listdir(path):
@@ -137,14 +133,14 @@ def generate_all(type_of_ouput):
                     pass
         else:
             if type_of_ouput == "thumbnails":
-                    create_cover(url, video_thumbnail_path, author, title, colorcombo, "epub", 42)
+                    create_cover(author_thumbnail_path, video_thumbnail_path, author, title, colorcombo, "epub", 42, True)
                         
             elif type_of_ouput == "all":
                     for color in color_combinations:
-                            create_cover(url, video_thumbnail_path, author, title, colorcombo, "epub", color)
+                            create_cover(author_thumbnail_path, video_thumbnail_path, author, title, colorcombo, "epub", color, True)
 
             elif type_of_ouput== "outline":
-                    create_cover(url, video_thumbnail_path, author, title, colorcombo, "epub", 5)
+                    create_cover(author_thumbnail_path, video_thumbnail_path, author, title, colorcombo, "epub", 5, True)
 
 
 def main():
