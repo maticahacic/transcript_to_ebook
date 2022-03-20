@@ -17,7 +17,21 @@ def load_color_button_textures():
             dpg.add_static_texture(width, height, data, tag=colorcombo)
 
 
+
+def color_buttons_popup():
+    with dpg.window(label="Color themes", popup=True, show=False, id="color_buttons_popup", no_title_bar=True, pos=[300, 300]):
+        height, width = 15, 150
+        path = "resources/color_combinations"
+        for colorcombo in os.listdir(path):
+            if "outline" in colorcombo:
+                pass
+            else:
+                dpg.add_image_button(colorcombo, user_data=colorcombo, height=height, width=width,
+                                        parent="color_picker_popup", callback=set_color_combo)
+
+
 def draw_color_buttons(name):
+    
     height, width = 15, 150
     if name == "dir":
         path = "resources/color_combinations"
@@ -35,6 +49,7 @@ def draw_color_buttons(name):
 
 def set_color_combo(sender, data, data1):
     dpg.configure_item("color_combo_name", texture_tag=data1, user_data=data1)
+    dpg.configure_item("color_buttons_popup", show=False)
     transcripts_to_ebook.draw_thumbnail()
 
 
@@ -99,14 +114,8 @@ def main_window():
                             with dpg.group(tag="color_picker_settings"):
                                 dpg.add_text("Cover color combination:")
                                 # draw_color_buttons("color_combo_name")
-                                dpg.add_image_button(texture_tag="combo1.png", user_data="combo1.png", tag="color_combo_name", parent="color_picker_settings",
-                             height=15,
-                             width=150)
-                                with dpg.popup("color_combo_name", mousebutton=dpg.mvMouseButton_Left,
-                                               tag="color_picker_popup", ):
-                                    dpg.add_text("Choose color combination")
-                                    dpg.add_separator()
-                                    draw_color_buttons("dir")
+                                dpg.add_image_button(texture_tag="combo1.png", user_data="combo1.png", tag="color_combo_name", height=15, width=150, 
+                                                    callback=lambda: dpg.configure_item("color_buttons_popup", show=True))
                             dpg.add_checkbox(label="Show outline", tag="outline_chkbx",
                                              callback=transcripts_to_ebook.draw_thumbnail)
 
@@ -124,6 +133,7 @@ def load_gui():
     dpg.create_context()
     main_window()
     file_created_window()
+    color_buttons_popup()
 
     dpg.create_viewport(title="Create ebook from Youtube video transcript", width=1092, height=687, resizable=False)
 
