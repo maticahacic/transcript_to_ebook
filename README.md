@@ -3,9 +3,9 @@
 **Transcript to ebook** is a **tool**. It will help you get transcript from your favorite Youtube video in various formats.
 
 As of right now supported formats include EPUB and TXT.
-![German screenshot](resources/screenshot_german.png)
-![Italian screenshot](resources/screenshot_italian.png)
-![A screenshot](resources/screenshot.png)
+![German screenshot](resources/screenshot_german.png|width=100px)
+![Italian screenshot](resources/screenshot_italian.png|width=100px)
+![A screenshot](resources/screenshot.png|width=100px)
 
 Covers generated with current available themes will look like this:
 
