@@ -54,13 +54,12 @@ def set_color_combo(sender, data, data1):
 
 
 def file_created_window():
-    with dpg.window(label="File was created", modal=True, show=False, id="file_created_window", no_title_bar=True, pos=[300, 300]):
+    with dpg.window(label="File was created", modal=True, show=False, id="file_created_window", no_title_bar=True, min_size=[440, 70], pos=[300, 300]):
         file_format = dpg.get_value("file_format_menu")
         dpg.add_text(f"{file_format} file was created you can find it in the root folder of the program")
         dpg.add_separator()
         with dpg.group(horizontal=True):
-            dpg.add_button(label="OK", pos=[160, 70], width=75, callback=lambda: dpg.configure_item("file_created_window", show=False))
-
+            dpg.add_button(label="OK", pos=[180, 50], width=80, callback=lambda: dpg.configure_item("file_created_window", show=False))
 
 
 def main_window():
