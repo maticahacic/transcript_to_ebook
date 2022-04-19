@@ -1,5 +1,4 @@
 import os
-from turtle import color
 import dearpygui.dearpygui as dpg
 import transcripts_to_ebook
 
