@@ -1,5 +1,6 @@
 import os
 from random import randrange
+import re
 
 import requests
 import dearpygui.dearpygui as dpg
@@ -37,7 +38,7 @@ def get_video_details(type_of_detail):
         return soup.find("link", itemprop="name").get("content")
     elif type_of_detail == "author_thumbnail":
         author_thumbnail = soup.findAll('script')
-        img_thumbnail_channel_patern = regex.compile(r'88\},\{"url":"(.*)","width":176,"height":176}')
+        img_thumbnail_channel_patern = regex.compile(r'88\},\{\"url\":\"(.*)\",\"width\":176,\"height\":176\}\]\},\"title\"')
         img_thumbnail_channel_url = img_thumbnail_channel_patern.findall(str(author_thumbnail))[0]
         return img_thumbnail_channel_url
 
@@ -170,7 +171,6 @@ def download_image(video_id, thumbnail_type):
     else:
         path = f"tmp/thumbnail_{thumbnail_type}.jpg"
         url = f"https://img.youtube.com/vi/{video_id}/{thumbnail_type}default.jpg"
-
     if os.path.exists(path):
         os.remove(path)
         urlretrieve(url, path)
