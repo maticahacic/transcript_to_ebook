@@ -73,7 +73,8 @@ def main_window():
             dpg.add_font_range_hint(dpg.mvFontRangeHint_Chinese_Simplified_Common)
             dpg.add_font_range_hint(dpg.mvFontRangeHint_Thai)
             dpg.add_font_range_hint(dpg.mvFontRangeHint_Vietnamese)
-
+            # Czech support - this probably adds support for lots of languages too
+            dpg.add_font_chars([0x00C1,0x00E1, 0x00C9, 0x00E9, 0x011A, 0x011B , 0x00CD, 0x00ED , 0x00D3, 0x00F3 , 0x00DA, 0x00FA, 0x016E, 0x016F, 0x00DD, 0x00FD, 0x010C, 0x010D, 0x010E, 0x010F, 0x0147, 0x0148, 0x0158, 0x0159, 0x0160, 0x0161, 0x0164, 0x0165, 0x017D, 0x017E])
     load_color_button_textures()
 
     with dpg.window(pos=[0, 0], autosize=True, no_collapse=True, no_resize=True, no_close=True, no_move=True,
