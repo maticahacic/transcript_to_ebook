@@ -16,7 +16,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from bs4 import BeautifulSoup as bs
 import regex
 import cover
-
+import pickle
 import gui
 
 
@@ -42,6 +42,29 @@ def get_video_details(type_of_detail):
         img_thumbnail_channel_url = img_thumbnail_channel_patern.findall(str(author_thumbnail))[0]
         return img_thumbnail_channel_url
 
+def video_detail(video_id):
+    page = urlopen(dpg.get_value("youtubethingy"))
+    soup = bs(page, features="html.parser")
+
+    author = soup.find("link", itemprop="name").get("content")
+    title = soup.title.next_sibling["content"]
+    description_soup = soup.findAll('script')
+    regex_pattern = regex.compile(r'(?<="shortDescription":")(?s)(.*)","isCrawlable"')
+    description = regex_pattern.findall(str(description_soup))[0]
+    video_thumbnail_url = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
+    author_thumbnail = soup.findAll('script')
+    img_thumbnail_channel_patern = regex.compile(r'88\},\{\"url\":\"(.*)\",\"width\":176,\"height\":176\}\]\},\"title\"')
+    author_thumbnail_url  = img_thumbnail_channel_patern.findall(str(author_thumbnail))[0]
+
+    # TODO FIX SO THAT THIS DOWNLOAD THE IMAGES AND PUTS PATH IN THE VIDEO DETAILS DICT
+    video_thumbnail_path = download_image(video_thumbnail_url, "maxres")
+    author_thumbnail_path = download_image(author_thumbnail_url, "author_thumbnail")
+
+    video_details = {"video_id":video_id, "author": author, "title": title, "description": description, "video_thumbnail_path": video_thumbnail_path, "author_thumbnail_path": author_thumbnail_path}
+
+    with open(f"{video_id}.pkl", "wb") as tf:
+        pickle.dump(video_details, tf)
+
 
 def create_a_file():
     # Placeholder (or so it seems) for creating files:
@@ -49,31 +72,38 @@ def create_a_file():
     video_id = get_video_id(dpg.get_value("youtubethingy"))
     
     file_format = dpg.get_value("file_format_menu")
-    print(video_id, file_format)
+
+    with open(f"{video_id}.pkl", "rb") as tf:
+        video_details = pickle.load(tf)
+
+
     if video_id is None:
         pass
     else:
+
         if file_format == "EPUB":
-            create_epub_file(video_id)
-            print("yo")
+            create_epub_file(video_details)
         elif file_format == "TXT":
-            include_description = False  # for now this will sta2y at manual change, till settings window is implemented
-            create_text_file(include_description)
+            create_text_file(video_details)
         else:
             # Room for PDF creation
             pass
         dpg.configure_item("file_created_window", show=True)
 
 
-def create_text_file(include_description):
-    author = get_video_details('author')
-    title = get_video_details('title')
-    description = get_video_details('description')
+def create_text_file(video_details):
+    author = video_details["author"]
+    title = video_details["title"]
+    description = video_details["description"]
+    video_thumbnail_path = video_details["video_thumbnail_path"] 
+    author_thumbnail_path = video_details["author_thumbnail_path"] 
     language = dpg.get_value("listoflanguages")
     paragraph = draw_transcript("create_file", None)  # If true it will return the paragraph else it will just draw them
     file = open(f"subs_as_txt_{language}.txt", "w")
     file.write(f"{title} - {author}\n")
     file.write("============================================================================\n")
+
+    include_description = False # for now this will sta2y at manual change, till settings window is implemented
     if include_description:
         file.write(f"{description}\n")
         file.write("============================================================================\n")
@@ -83,23 +113,22 @@ def create_text_file(include_description):
     file.close()
 
 
-def create_epub_file(video_id):
+def create_epub_file(video_details):
     # FIXME: Add metadata to the book from video descriptione
-    author = get_video_details('author')
-    title = get_video_details('title')
-    description = get_video_details('description')
+    author = video_details["author"]
+    title = video_details["title"]
+    description = video_details["description"]
     language = dpg.get_value("listoflanguages")
-    cover_quality = "maxres"
     outline = dpg.get_value("outline_chkbx")
     book = epub.EpubBook()
 
-    book.set_identifier(video_id)
+    book.set_identifier(video_details["video_id"])
     book.set_title(title)
     book.set_language(language)
     book.add_author(author)
 
-    video_thumbnail_path = download_image(video_id, cover_quality)
-    author_thumbnail_path = download_image(video_id, "author_thumbnail")
+    video_thumbnail_path = video_details["video_thumbnail_path"] 
+    author_thumbnail_path = video_details["author_thumbnail_path"] 
     colorcombo = dpg.get_item_user_data("color_combo_name")
 
     cover.create_cover(author_thumbnail_path, video_thumbnail_path, author, title, colorcombo, "epub", None, outline)
@@ -164,13 +193,11 @@ def create_epub_file(video_id):
     epub.write_epub(f'{title}_{language}.epub', book, {})
 
 
-def download_image(video_id, thumbnail_type):
+def download_image(url, thumbnail_type):
     if thumbnail_type == "author_thumbnail":
-        url = get_video_details("author_thumbnail")
         path = f"tmp/thumbnail_{thumbnail_type}.jpg"
-    else:
+    elif thumbnail_type == "maxres":
         path = f"tmp/thumbnail_{thumbnail_type}.jpg"
-        url = f"https://img.youtube.com/vi/{video_id}/{thumbnail_type}default.jpg"
     if os.path.exists(path):
         os.remove(path)
         urlretrieve(url, path)
@@ -265,13 +292,15 @@ def show_autogenerated_transcripts(data):
         dpg.configure_item("listoflanguages", items=transcript_list_manual)
 
 
-def draw_thumbnail():
+def draw_thumbnail(video_id):
     # FIXME This is "proff of concept". It will go after the "json"/"pickle" tomfullery
     # https://www.bogotobogo.com/python/python_serialization_pickle_json.php
-    video_id = get_video_id(dpg.get_value("youtubethingy"))
+    
+    with open(f"{video_id}.pkl", "rb") as tf:
+        video_details = pickle.load(tf)
+
 
     # FIXME: implement test cover page so if url is empty user gets something out of the view
-    print(f"Video_id = {video_id}")
     if video_id is None:
         author = "This is a test of Author Name"
         title = "This is just a Title Test Case with some words when you fill out the Youtube URL field you will see " \
@@ -280,11 +309,10 @@ def draw_thumbnail():
         author_thumbnail_path = "resources/test_graphics/author_thumbnail_test.png"
         colorcombo = dpg.get_item_user_data("color_combo_name")
     else:
-        author = get_video_details('author')
-        title = get_video_details('title')
-        cover_quality = "maxres"
-        video_thumbnail_path = download_image(video_id, cover_quality)
-        author_thumbnail_path = download_image(video_id, "author_thumbnail")
+        author = video_details["author"]
+        title = video_details["title"]
+        video_thumbnail_path = video_details["video_thumbnail_path"] 
+        author_thumbnail_path = video_details["author_thumbnail_path"] 
         colorcombo = dpg.get_item_user_data("color_combo_name")
     outline = dpg.get_value("outline_chkbx")
     path = cover.create_cover(author_thumbnail_path, video_thumbnail_path, author, title, colorcombo, "thumbnail", None,
@@ -321,9 +349,10 @@ def do_the_youtube_thingy(sender):
     if validate_youtube_video_id_url(video_id):
         # 0. Clear widgets if they exist
         senders = {"youtubethingy": clear_widgets, "youtubethingy_buttons": clear_widgets}
+        video_detail(video_id)
         if sender in senders:
             senders[sender]()
-            draw_thumbnail()
+            draw_thumbnail(video_id)
 
         show_autogenerated_transcripts(dpg.get_value("autogenerated_chkbx"))
         draw_transcript("do_the_youtube_thingy", dpg.get_value("listoflanguages"))
