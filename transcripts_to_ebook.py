@@ -20,6 +20,15 @@ import pickle
 import gui
 
 
+def create_clear_tmp_folder():
+    path = "tmp"
+    files = os.listdir(path)
+    for file in files:
+        file_path = os.path.join(path, file)
+        os.unlink(file_path)
+    os.rmdir(path)
+    os.mkdir(path)
+
 def get_video_details(type_of_detail):
     page = urlopen(dpg.get_value("youtubethingy"))
     soup = bs(page, features="html.parser")
@@ -62,7 +71,7 @@ def video_detail(video_id):
 
     video_details = {"video_id":video_id, "author": author, "title": title, "description": description, "video_thumbnail_path": video_thumbnail_path, "author_thumbnail_path": author_thumbnail_path}
 
-    with open(f"{video_id}.pkl", "wb") as tf:
+    with open(f"tmp/{video_id}.pkl", "wb") as tf:
         pickle.dump(video_details, tf)
 
 
@@ -72,15 +81,12 @@ def create_a_file():
     video_id = get_video_id(dpg.get_value("youtubethingy"))
     
     file_format = dpg.get_value("file_format_menu")
-
-    with open(f"{video_id}.pkl", "rb") as tf:
+    
+    with open(f"tmp/{video_id}.pkl", "rb") as tf:
         video_details = pickle.load(tf)
 
 
-    if video_id is None:
-        pass
-    else:
-
+    if validate_youtube_video_id_url(video_id):
         if file_format == "EPUB":
             create_epub_file(video_details)
         elif file_format == "TXT":
@@ -89,6 +95,8 @@ def create_a_file():
             # Room for PDF creation
             pass
         dpg.configure_item("file_created_window", show=True)
+    else:
+        print("There is something wrong with the youtube URL")
 
 
 def create_text_file(video_details):
@@ -296,7 +304,7 @@ def draw_thumbnail(video_id):
     # FIXME This is "proff of concept". It will go after the "json"/"pickle" tomfullery
     # https://www.bogotobogo.com/python/python_serialization_pickle_json.php
     
-    with open(f"{video_id}.pkl", "rb") as tf:
+    with open(f"tmp/{video_id}.pkl", "rb") as tf:
         video_details = pickle.load(tf)
 
 
@@ -418,6 +426,7 @@ def draw_transcript(sender, data):
 
 
 def main():
+    create_clear_tmp_folder()
     gui.load_gui()
 
 
