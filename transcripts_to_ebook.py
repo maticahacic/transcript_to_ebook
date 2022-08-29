@@ -18,15 +18,20 @@ import regex
 import cover
 import pickle
 import gui
+import pdfkit
+
+from fpdf import FPDF
 
 
+from warnings import filterwarnings
 def create_clear_tmp_folder():
     path = "tmp"
-    files = os.listdir(path)
-    for file in files:
-        file_path = os.path.join(path, file)
-        os.unlink(file_path)
-    os.rmdir(path)
+    if os.path.exists(path):
+        files = os.listdir(path)
+        for file in files:
+            file_path = os.path.join(path, file)
+            os.unlink(file_path)
+        os.rmdir(path)
     os.mkdir(path)
 
 def get_video_details(type_of_detail):
@@ -91,7 +96,8 @@ def create_a_file():
             create_epub_file(video_details)
         elif file_format == "TXT":
             create_text_file(video_details)
-        else:
+        elif file_format == "PDF":
+            create_pdf_file(video_details)
             # Room for PDF creation
             pass
         dpg.configure_item("file_created_window", show=True)
@@ -199,6 +205,64 @@ def create_epub_file(video_details):
 
     # create epub file
     epub.write_epub(f'{title}_{language}.epub', book, {})
+
+def create_pdf_file(video_details):
+    # FIXME: Add metadata to the book from video descriptione
+    author = video_details["author"]
+    title = video_details["title"]
+    description = video_details["description"]
+    outline = dpg.get_value("outline_chkbx")
+    language = dpg.get_value("listoflanguages")
+
+    video_thumbnail_path = video_details["video_thumbnail_path"] 
+    author_thumbnail_path = video_details["author_thumbnail_path"] 
+    colorcombo = dpg.get_item_user_data("color_combo_name")
+
+    cover.create_cover(author_thumbnail_path, video_thumbnail_path, author, title, colorcombo, "epub", None, outline)
+
+    # Description
+    #print(description)
+
+    # Transcript
+
+    # HTMLIFY the transcript
+    paragraph = draw_transcript("create_file", "pdf")
+
+    pdf = FPDF()
+    pdf.add_page()
+    print(pdf.eph)
+
+
+    pdf.image("tmp/cover.png", h=pdf.eph, w=pdf.epw)
+    pdf.add_page()
+    pdf.add_font('DejaVu', fname='resources/DejaVuSans.ttf')
+
+
+    description = video_details['description']
+    string_encode = description.encode("ascii", "ignore")
+    string_decode = string_encode.decode()
+    pdf.set_font('DejaVu', size=18)
+    pdf.write(8, "Description\n")
+
+
+    pdf.set_font('DejaVu', size=12)
+    for txt in string_decode.split('\\n'):
+        pdf.write(8, txt)
+        pdf.ln(8)
+
+    pdf.add_page()
+
+    pdf.set_font('DejaVu', size=18)
+    pdf.write(14, "Transcript\n")
+    pdf.set_font('DejaVu', size=12)
+    for txt in paragraph.split('\n'):
+        pdf.write(8, txt)
+        pdf.ln(8)
+
+    pdf.ln(10)
+    pdf.write(8, 'This is standard built-in font')
+    filterwarnings('ignore')
+    pdf.output(f"{title}_{language}.pdf")
 
 
 def download_image(url, thumbnail_type):

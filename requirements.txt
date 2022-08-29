@@ -5,3 +5,4 @@ regex~=2022.3.2
 beautifulsoup4~=4.10.0
 youtube-transcript-api~=0.4.3
 pillow~=9.0.1
+fpdf2~=2.5.6
